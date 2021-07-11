@@ -8,3 +8,4 @@ VALUES
     ('Nursing'),
     ('Maintenance');
 
+INSERT INTO role ()
