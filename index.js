@@ -1,4 +1,5 @@
 const cTable = require('console.table');
+const { listenerCount } = require('events');
 const inquirer = require("inquirer");
 
 // get the client
@@ -11,6 +12,30 @@ const connection = mysql.createConnection({
   password: 'Stark590127!',
   database: 'employee_tracker'
 });
+
+let addDepartment = (name) => {
+    connection.query('INSERT INTO department SET name = ?',
+    [name],
+    function (error, results) {
+        if (error) throw error;
+    });
+};
+
+let addRole = (title, salary, department_id) => {
+    connection.query('INSERT INTO role SET title = ?, salary = ?, department_id = ?',
+    [title, salary, department_id],
+    function (error, results) {
+        if (error) throw error;
+    });
+};
+
+let addEmployee = (first_name, last_name, role_id, manager_id) => {
+    connection.query('INSERT INTO employee SET first_name = ?, last_name = ?, role_id = ?, manager_id = ?',
+    [first_name, last_name, role_id, manager_id],
+    function (error, results) {
+        if (error) throw error;
+    });
+};
 
 const promptUser = () => {
     return inquirer.prompt([
@@ -55,16 +80,72 @@ const promptUser = () => {
             );
         }
         if (answers.options === 'add a department') {
-            console.log('add a department is being recognized!');
+            inquirer.prompt([
+                {
+                    type: 'input',
+                    name: 'newDepartment',
+                    message: 'Enter the name of the department that you would like to add:'
+                }
+            ]).then(answers => {
+                addDepartment(answers.newDepartment);
+                console.log(`Department ${answers.newDepartment} added!`); 
+                promptUser();
+            })
         }
         if (answers.options === 'add a role') {
-            console.log('add a role path is being recognized!');
+            inquirer.prompt([
+                {
+                    type: 'input',
+                    name: 'roleName',
+                    message: 'Enter the name of the role that you would like to add:'
+                },
+                {
+                    type: 'number',
+                    name: 'roleSalary',
+                    message: 'Enter the salary of the role that you would like to add:' 
+                },
+                {
+                    type: 'number',
+                    name: 'roleDepartment',
+                    message: 'Enter the department ID of the role that you would like to add:' 
+                }
+            ]).then(answers => {
+                addRole(answers.roleName, answers.roleSalary, answers.roleDepartment);
+                promptUser();
+            })
         }
         if (answers.options === 'add an employee') {
-            console.log('add an employee path is being recognized!');
+            inquirer.prompt([
+                {
+                    type: 'input',
+                    name: 'employeeFirstName',
+                    message: 'Enter the first name of the employee that you would like to add:'
+                },
+                {
+                    type: 'input',
+                    name: 'employeeLastName',
+                    message: 'Enter the last name of the employee that you would like to add:'
+                },
+                {
+                    type: 'input',
+                    name: 'employeeRole',
+                    message: 'Enter the role ID for the employee that you would like to add:'
+                },
+                {
+                    type: 'input',
+                    name: 'employeeManager',
+                    message: "Enter the ID of the employee's manager:" 
+                }
+            ]).then(answers => {
+                addEmployee(answers.employeeFirstName, answers.employeeLastName, answers.employeeRole, answers.employeeManager);
+                console.log(`Your employee, ${answers.employeeFirstName}, has been successfully added!`);
+                promptUser();
+            })
         }
         if (answers.options === 'update an employee role') {
-            console.log('update an employee role is being recognized!');
+            inquirer.prompt([
+
+            ])
         }
     })
     .catch((error) => {
