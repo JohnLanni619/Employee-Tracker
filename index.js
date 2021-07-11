@@ -40,7 +40,7 @@ const promptUser = () => {
         }
         if (answers.options === 'view all roles') {
             connection.query(
-                'SELECT * FROM `role`',
+                'SELECT role.title, role.id, department.name AS department_name, role.salary FROM role LEFT JOIN department ON role.department_id=department.id',
                 function(err, results) {
                     console.table(results); // results contains rows returned by server
                 }
@@ -48,7 +48,7 @@ const promptUser = () => {
         }
         if (answers.options === 'view all employees') {
             connection.query(
-                'SELECT * FROM `employee`',
+                'SELECT employee.id, employee.first_name, employee.last_name, role.title AS employee_title, role.salary AS salary, employee.manager_id FROM employee LEFT JOIN role ON employee.role_id=role.id;',
                 function(err, results) {
                     console.table(results); // results contains rows returned by server
                 }
