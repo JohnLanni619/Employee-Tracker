@@ -1,17 +1,10 @@
 const cTable = require('console.table');
 const { listenerCount } = require('events');
 const inquirer = require("inquirer");
+const connection = require('./db/connection');
 
 // get the client
 const mysql = require('mysql2');
- 
-// create the connection to database
-const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: 'Stark590127!',
-  database: 'employee_tracker'
-});
 
 let addDepartment = (name) => {
     connection.query('INSERT INTO department SET name = ?',
@@ -39,7 +32,7 @@ let addEmployee = (first_name, last_name, role_id, manager_id) => {
 
 let updateEmployee = (role_id, id) => {
     connection.query(`UPDATE employee SET role_id=? WHERE id=?`,
-    [id, role_id],
+    [role_id, id],
     function (error, results) {
         if (error) throw error;
     });
@@ -119,6 +112,7 @@ const promptUser = () => {
                 }
             ]).then(answers => {
                 addRole(answers.roleName, answers.roleSalary, answers.roleDepartment);
+                console.log(`Your new role ${answers.roleName} was successfully created!`);
                 promptUser();
             })
         }
@@ -163,7 +157,6 @@ const promptUser = () => {
                     message: 'Please enter the role ID that you would like to update your selected employee to:'
                 }
             ]).then(answers => {
-                console.log(answers.roleUpdate, answers.employeeUpdate);
                 updateEmployee(answers.roleUpdate, answers.employeeUpdate);
                 promptUser();
             })
