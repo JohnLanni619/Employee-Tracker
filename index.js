@@ -37,6 +37,14 @@ let addEmployee = (first_name, last_name, role_id, manager_id) => {
     });
 };
 
+let updateEmployee = (role_id, id) => {
+    connection.query(`UPDATE employee SET role_id=? WHERE id=?`,
+    [id, role_id],
+    function (error, results) {
+        if (error) throw error;
+    });
+};
+
 const promptUser = () => {
     return inquirer.prompt([
         {
@@ -144,8 +152,21 @@ const promptUser = () => {
         }
         if (answers.options === 'update an employee role') {
             inquirer.prompt([
-
-            ])
+                {
+                    type: 'input',
+                    name: 'employeeUpdate',
+                    message: 'Please enter the ID for the employee whose role you would like to update:'
+                },
+                {
+                    type: 'input',
+                    name: 'roleUpdate',
+                    message: 'Please enter the role ID that you would like to update your selected employee to:'
+                }
+            ]).then(answers => {
+                console.log(answers.roleUpdate, answers.employeeUpdate);
+                updateEmployee(answers.roleUpdate, answers.employeeUpdate);
+                promptUser();
+            })
         }
     })
     .catch((error) => {
